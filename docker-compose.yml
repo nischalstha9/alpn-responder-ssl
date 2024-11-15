@@ -1,0 +1,9 @@
+services:
+  alpn:
+    image: nischalstha/alpn-responder:v1
+    build: .
+    volumes:
+      - ./certificates:/etc/nginx/certs
+      - ./domains.txt:/opt/app/domains.txt
+    ports:
+      - 443:443
