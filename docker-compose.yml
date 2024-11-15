@@ -1,6 +1,6 @@
 services:
   alpn:
-    image: nischalstha/alpn-responder:v1
+    image: nischalstha/alpn-responder:main
     build: .
     volumes:
       - ./certificates:/etc/nginx/certs
