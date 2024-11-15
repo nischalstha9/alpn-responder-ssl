@@ -51,7 +51,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}:${{ github.ref_name }},push-by-digest=true,name-canonical=true,push=true:${{ github.ref_name }}
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}:${{ github.ref_name }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
         run: |
