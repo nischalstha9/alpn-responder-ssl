@@ -1,4 +1,4 @@
-name: ci
+name: Build and Release to Dockerhub
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm64
+          # - linux/arm64
     steps:
       - name: Prepare
         run: |
