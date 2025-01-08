@@ -28,6 +28,8 @@ RUN openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -subj /C=${COUNTRY}/ST=
 
 FROM base as alpn
 
+ENV PYTHONUNBUFFERED=1
+
 RUN mkdir -p /etc/ssl/
 
 WORKDIR /opt/app
@@ -47,6 +49,4 @@ VOLUME /etc/nginx/certs
 
 EXPOSE 443
 
-FROM alpn as runtime
-ENV PYTHONUNBUFFERED=1
 ENTRYPOINT [ "python3", "main.py", "alpn-server" ]

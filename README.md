@@ -2,12 +2,6 @@
 
 > Port 443 should be available on host.
 
-#### Example domains.txt file.
-
-```txt
-sth-insecure.example.com
-```
-
 ### Steps
 
 #### Setup With Compose
@@ -18,12 +12,18 @@ sth-insecure.example.com
 services:
   alpn:
     image: nischalstha/alpn-responder:main
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: alpn
     volumes:
       - ./certificates:/etc/nginx/certs
-      - ./domains.txt:/opt/app/domains.txt
+      - .:/opt/app
     ports:
       - 443:443
+    env_file:
+      - .env
+
 ```
 
 - Run `docker compose up -d`
@@ -31,7 +31,13 @@ services:
 ### Compose Less Setup
 
 ```sh
-docker run --name alpn -p 443:443 -v ./certificates:/etc/nginx/certs -v ./domains.txt:/opt/app/domains.txt nischalstha/alpn-responder:main
+docker run -d \
+  --name alpn \
+  -p 443:443 \
+  --env-file .env \
+  -v ./certificates:/etc/nginx/certs \
+  -v .:/opt/app \
+  nischalstha/alpn-responder:main
 ```
 
 #### Execution
