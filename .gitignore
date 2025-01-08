@@ -1,3 +1,9 @@
 ./certificates
 config
 domains.txt
+.env
+accounts/
+certificates/
+certs/
+chains/
+__pycache__/

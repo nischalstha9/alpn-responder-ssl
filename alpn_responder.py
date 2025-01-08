@@ -2,15 +2,13 @@
 
 import ssl
 import socketserver
-import threading
 import re
 import os
 
-ALPNDIR="/etc/dehydrated/alpn-certs"
-PROXY_PROTOCOL=False
-
-FALLBACK_CERTIFICATE="/etc/ssl/certs/ssl-cert-snakeoil.pem"
-FALLBACK_KEY="/etc/ssl/private/ssl-cert-snakeoil.key"
+ALPNDIR=os.environ.get("ALPNDIR","/etc/dehydrated/alpn-certs")
+PROXY_PROTOCOL=os.environ.get("PROXY_PROTOCOL",False)
+FALLBACK_CERTIFICATE=os.environ.get("FALLBACK_CERTIFICATE","/etc/ssl/certs/ssl-cert-snakeoil.pem")
+FALLBACK_KEY=os.environ.get("FALLBACK_KEY","/etc/ssl/private/ssl-cert-snakeoil.key")
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass

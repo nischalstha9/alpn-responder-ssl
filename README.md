@@ -44,3 +44,8 @@ docker run --name alpn -p 443:443 -v ./certificates:/etc/nginx/certs -v ./domain
     ./dehydrated --register --accept-terms
     ./dehydrated -c -f config
 ```
+
+```sh
+python3 main.py --staging -d alpn.shrestha-nischal.com.np
+python3 main.py --config_file /opt/app/config --domains_file /opt/app/domains.txt
+```

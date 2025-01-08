@@ -1,2 +1,9 @@
-./certificates
+
 config
+.env
+config
+accounts/
+certificates/
+certs/
+chains/
+__pycache__/
