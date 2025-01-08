@@ -18,7 +18,6 @@ services:
       target: alpn
     volumes:
       - ./certificates:/etc/nginx/certs
-      - .:/opt/app
     ports:
       - 443:443
     env_file:
@@ -36,8 +35,9 @@ docker run -d \
   -p 443:443 \
   --env-file .env \
   -v ./certificates:/etc/nginx/certs \
-  -v .:/opt/app \
   nischalstha/alpn-responder:main
+
+docker exec -t alpn python3 main.py --staging --domains alpn.shrestha-nischal.com.np
 ```
 
 #### Execution

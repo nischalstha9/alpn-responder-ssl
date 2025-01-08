@@ -1,7 +1,5 @@
-
 config
 .env
-config
 accounts/
 certificates/
 certs/

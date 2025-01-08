@@ -35,6 +35,7 @@ class CertificateHandler:
     def generate_config(self):
         try:
             os.environ['CA'] = self.CA
+            os.environ['BASEDIR'] = self.BASE_DIR
             if self.CREATE_DOMAINS_FILE:
                 self.generate_domains_file()
             os.environ['DOMAINS_FILE_PATH'] = self.DOMAINS_FILE_PATH
