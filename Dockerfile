@@ -47,10 +47,6 @@ VOLUME /etc/nginx/certs
 
 EXPOSE 443
 
-FROM alpn as dev
+FROM alpn as runtime
 ENV PYTHONUNBUFFERED=1
 ENTRYPOINT [ "python3", "main.py", "alpn-server" ]
-
-FROM alpn as prod
-ENV PYTHONUNBUFFERED=1
-ENTRYPOINT [ "python3", "entrypoint.py" ]
