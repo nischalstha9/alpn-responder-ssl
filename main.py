@@ -23,7 +23,7 @@ class CertificateHandler:
 
     def __init__(self, staging=False, domains=DOMAINS, domains_file=None, config_file=None, raw_args=None, force_register=False):
         self.CA = "https://acme-staging-v02.api.letsencrypt.org/directory" if staging \
-            else "https://acme-v01.api.letsencrypt.org/directory"
+            else "https://acme-v02.api.letsencrypt.org/directory"
         self.DOMAINS = domains
         self.FORCE_REGISTER = force_register
         if domains_file:
