@@ -113,7 +113,7 @@ Your certificates can be found at certificates folder on execution directory. Th
 ```
 .
 └── certificates
-    └── alpn.shrestha-nischal.com.np
+    └── s1.example.com
         ├── cert-1736412857.csr
         ├── cert-1736412857.pem
         ├── cert-1736412914.csr
@@ -135,6 +135,8 @@ Your certificates can be found at certificates folder on execution directory. Th
 > Refer [nginx-Configuring HTTPS servers](https://nginx.org/en/docs/http/configuring_https_servers.html) for SSL configuration
 
 ### Configuration for running behind nginx proxy.
+
+*If running behind nginx proxy, then the host side port should be changed as `80,443` can be occupied by nginx.*
 
 On an nginx tcp load-balancer you can use the ssl_preread module to map a different port for acme-tls requests than for e.g. HTTP/2 or HTTP/1.1 requests.
 
