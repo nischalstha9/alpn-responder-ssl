@@ -69,7 +69,8 @@ $ docker run --rm \
 
 ##### 2. Execution
 
-> [!IMPORTANT] > `--staging` uses Let's Encrypt's staging server. Remove --staging flag for production certificates.
+> [!IMPORTANT]
+> `--staging` uses Let's Encrypt's staging server. Remove --staging flag for production certificates.
 
 ##### 2.1 Normal Execution
 
