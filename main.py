@@ -18,11 +18,14 @@ class CertificateHandler:
     DOMAINS = []
     RAW_EXEC_ARGS=[]
     CA = "https://acme-staging-v02.api.letsencrypt.org/directory"
+    FORCE_REGISTER = False
+    CA_REGISTERED = False
 
-    def __init__(self, staging=False, domains=DOMAINS, domains_file=None, config_file=None, raw_args=None):
+    def __init__(self, staging=False, domains=DOMAINS, domains_file=None, config_file=None, raw_args=None, force_register=False):
         self.CA = "https://acme-staging-v02.api.letsencrypt.org/directory" if staging \
             else "https://acme-v01.api.letsencrypt.org/directory"
         self.DOMAINS = domains
+        self.FORCE_REGISTER = force_register
         if domains_file:
             self.DOMAINS_FILE_PATH = domains_file
             self.CREATE_DOMAINS_FILE = False
@@ -31,6 +34,7 @@ class CertificateHandler:
             self.CREATE_CONFIG_FILE = False
         if raw_args:
             self.RAW_EXEC_ARGS = raw_args
+        self.generate_config()
 
     def generate_config(self):
         try:
@@ -63,26 +67,31 @@ class CertificateHandler:
     #         self.generate_domains_file()
     #     return self.DOMAINS_FILE_PATH
 
+    def generate_snakeoil_certificate(self):
+        key_file="/etc/ssl/private/ssl-cert-snakeoil.key"
+        cert_file="/etc/ssl/private/ssl-cert-snakeoil.pem"
+        if not (os.path.isfile(key_file) or os.path.isfile(cert_file)):
+            subprocess.run(['openssl', 'req', '-x509', '-nodes', '-days', '3650', '-newkey', 'rsa:2048', '-subj', f'/C={os.environ["COUNTRY"]}/ST={os.environ["STATE"]}/L={os.environ["LOCALITY"]}/O={os.environ["ORGANIZATION"]}/OU={os.environ["ORGANIZATIONAL_UNIT"]}/CN={os.environ["COMMON_NAME"]}', '-keyout', '/etc/ssl/private/ssl-cert-snakeoil.key', '-out', '/etc/ssl/certs/ssl-cert-snakeoil.pem'])
+
     def register(self):
-        subprocess.run([f'{self.BASE_DIR}/dehydrated', '--register', '--accept-terms'])
+        if self.FORCE_REGISTER:
+            subprocess.run([f'rm', '-r','accounts', 'chains'])
+            pass
+        if not self.CA_REGISTERED or self.FORCE_REGISTER:
+            self.generate_snakeoil_certificate()
+            subprocess.run([f'{self.BASE_DIR}/dehydrated', '--register', '--accept-terms'])
+            self.CA_REGISTERED = True
 
     def get_certificate(self):
         if not os.path.isfile(self.CONFIG_FILE_PATH):
-            try:
-                print(f"{self.CONFIG_FILE_PATH} missing. Creating config file from given parameters.")
-                self.generate_config()
-            except:
-                print("Could not create config file!")
-                print(f"{self.CONFIG_FILE_PATH} missing. File not found!")
-                exit(1)
+            print("Dehydrated config file missing.")
+            print(f"{self.CONFIG_FILE_PATH} missing. File not found!")
+            exit(1)
 
         if not os.path.isfile(self.DOMAINS_FILE_PATH):
-            try:
-                print(f"{self.DOMAINS_FILE_PATH} missing. Creating domains file from given domains.")
-                self.generate_domains_file()
-            except:
-                print(f"{self.DOMAINS_FILE_PATH} missing. File not found!")
-                exit(1)
+            print(f"Domains file is missing.")
+            print(f"{self.DOMAINS_FILE_PATH} missing. File not found!")
+            exit(1)
         
         self.register()
         self.execute()
@@ -118,7 +127,7 @@ def validate_domain_input(args):
     if not (args.domains_file or args.domains):
         print("""
               Domains or Domains file required.
-              -d or --domains for comma-separated list of domains or --domains_file for file consisting domains.
+              -d or --domains for comma-separated list of domains or --domains-file for file consisting domains.
               """)
         exit(1)
 
@@ -144,12 +153,16 @@ if __name__ == "__main__":
                         required=False,
                         help="Comma-separated list of domains. Example: example.com,www.example.com,a.example.com,b.example.com")
     
-    parser.add_argument('--domains_file',
+    parser.add_argument('--force-register',
+                        action='store_true',
+                        help="Force re-register to Let's Encrypt.")
+    
+    parser.add_argument('--domains-file',
                         type=str,
                         required=False,
                         help="File consisting domains to request certificate for. Ensure domains are separated by line break.")
     
-    parser.add_argument('--config_file',
+    parser.add_argument('--config-file',
                         type=str,
                         required=False,
                         help="File consisting config to request certificate with dehydrated. \
@@ -175,7 +188,7 @@ if __name__ == "__main__":
         if not args.domains_file:
             domains_list = args.domains.split(',')
         
-        handler = CertificateHandler(staging=args.staging, domains=domains_list, domains_file=args.domains_file, config_file=args.config_file)
+        handler = CertificateHandler(staging=args.staging, domains=domains_list, domains_file=args.domains_file, config_file=args.config_file, force_register=args.force_register)
         handler.get_certificate()
 
     if args.command == "exception-shock-courier" or args.command == "certonly":
