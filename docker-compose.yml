@@ -7,7 +7,7 @@ services:
       target: alpn
     volumes:
       - ./certificates:/etc/nginx/certs
-      # - .:/opt/app # For development only. Remove on production
+      - .:/opt/app # For development only. Remove on production
     ports:
       - 10443:443
     env_file:

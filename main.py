@@ -34,7 +34,10 @@ class CertificateHandler:
             self.CREATE_CONFIG_FILE = False
         if raw_args:
             self.RAW_EXEC_ARGS = raw_args
-        self.generate_config()
+        if raw_args is None and config_file is None:
+            self.generate_config()
+        if raw_args is None and domains_file is None:
+            self.generate_domains_file()
 
     def generate_config(self):
         try:
@@ -120,14 +123,12 @@ class ALPNServer:
             print(e)
             server.shutdown()
             
-            
-            # subprocess.run(['python3', 'alpn-responder.py'], stdout=outfile)
 
 def validate_domain_input(args):
-    if not (args.domains_file or args.domains):
+    if not (args.domains_file or args.domains) and not (args.command == "dehydrated-raw"):
         print("""
-              Domains or Domains file required.
-              -d or --domains for comma-separated list of domains or --domains-file for file consisting domains.
+              Domains or Domains file required when not using dehydrated-raw.
+                Use -d or --domains for comma-separated list of domains or --domains-file for file consisting domains.
               """)
         exit(1)
 
@@ -141,7 +142,7 @@ if __name__ == "__main__":
                         nargs='?',
                         default="exception-shock-courier",
                          help="""
-                        <NONE> | certonly | dehyrated-raw | alpn-server
+                        <NONE> | dehyrated-raw | alpn-server
                          """)
     
     parser.add_argument('-s','--staging',

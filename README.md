@@ -175,4 +175,3 @@ That way https requests are forwarded to port 443 on the backend server, and acm
 - https://github.com/dehydrated-io/dehydrated/blob/master/docs/tls-alpn.md
 - https://github.com/dehydrated-io/dehydrated/
 - https://letsencrypt.org/docs/challenge-types/
-- https://github.com/lukas2511/dehydrated/
