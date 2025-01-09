@@ -6,19 +6,23 @@ Dehydrated Wrapped is Dehydrated Wrapper that runs alpn server on background to 
 The deployment of certificates via tls-alpn-01 often involves complex configurations, including ALPN responders and fallback certificates. This wrapper simplifies the process, streamlining deployment. While future improvements may further simplify the workflow, this Docker image provides a convenient solution for now.
 
 ## Pros and Cons of TLS-ALPN-01
+
 Pros:
-  - It works if port 80 is unavailable to you.
-  - It can be performed purely at the TLS layer.
-  - It can be used to validate IP Addresses as well.
+
+- It works if port 80 is unavailable to you.
+- It can be performed purely at the TLS layer.
+- It can be used to validate IP Addresses as well.
 
 Cons:
-  - It’s not supported by Apache, Nginx, or Certbot, and probably won’t be soon.
-  - Like HTTP-01, if you have multiple servers they need to all answer with the same content.
-  - This method cannot be used to validate wildcard domains.
+
+- It’s not supported by Apache, Nginx, or Certbot, and probably won’t be soon.
+- Like HTTP-01, if you have multiple servers they need to all answer with the same content.
+- This method cannot be used to validate wildcard domains.
 
 ## Usage
 
 ### Requirements
+
 - Docker
 - Port 443 should be available on host.
 
@@ -33,7 +37,7 @@ Write into `docker-compose.yml` or `compose.yml`
 ```yml
 services:
   alpn:
-    image: nischalstha/alpn-responder:main
+    image: nischalstha/dehydrated-wrapped:main
     build:
       context: .
       dockerfile: Dockerfile
@@ -47,6 +51,7 @@ services:
 ```
 
 Then run:
+
 ```sh
 $ docker compose up -d
 ```
@@ -59,13 +64,12 @@ $ docker run --rm \
   --name alpn \
   --publish 443:443 \
   --volume ./certificates:/etc/nginx/certs \
-  nischalstha/alpn-responder:main
+  nischalstha/dehydrated-wrapped:main
 ```
 
 ##### 2. Execution
 
-> [!IMPORTANT]
-> `--staging` uses Let's Encrypt's staging server. Remove --staging flag for production certificates.
+> [!IMPORTANT] > `--staging` uses Let's Encrypt's staging server. Remove --staging flag for production certificates.
 
 ##### 2.1 Normal Execution
 
@@ -77,9 +81,10 @@ $ docker exec -t alpn dwrap --staging --domains s1.example.com,s2.example.com
 
 > [!NOTE]
 > Here `/opt/app/config` and `/opt/app/domains.txt` file is mounted via docker volume. \
-> For `config` file, Refer: 
->  - https://raw.githubusercontent.com/nischalstha9/alpn-responder-ssl/main/config.example
->  - https://raw.githubusercontent.com/lukas2511/dehydrated/master/docs/examples/config
+> For `config` file, Refer:
+>
+> - https://raw.githubusercontent.com/nischalstha9/alpn-responder-ssl/main/config.example
+> - https://raw.githubusercontent.com/lukas2511/dehydrated/master/docs/examples/config
 
 ```sh
 $ docker run --rm \
@@ -89,18 +94,21 @@ $ docker run --rm \
   --volume ./certificates:/etc/nginx/certs \
   --volume ./config:/opt/app/config \
   --volume ./domains.txt:/opt/app/domains.txt \
-  nischalstha/alpn-responder:main
+  nischalstha/dehydrated-wrapped:main
 
 $ docker exec -t alpn dwrap --config-file /opt/app/config --domains-file /opt/app/domains.txt
 ```
 
 ##### 2.3 Execution of dehydrated raw
+
 ```sh
 $ docker exec -t alpn dwrap dehyrated-raw <ANY DEHYDRATED OPTIONS>
 ```
 
 #### Results
+
 Your certificates can be found at certificates folder on execution directory. The certificates are protected with root permissions. Move them to preferred directory and use them in nginx config file.
+
 ```
 .
 └── certificates
@@ -122,9 +130,8 @@ Your certificates can be found at certificates folder on execution directory. Th
 2 directories, 13 files
 ```
 
-> [!TIP] 
+> [!TIP]
 > Refer [nginx-Configuring HTTPS servers](https://nginx.org/en/docs/http/configuring_https_servers.html) for SSL configuration
-
 
 ### Configuration for running behind nginx proxy.
 
@@ -133,6 +140,7 @@ On an nginx tcp load-balancer you can use the ssl_preread module to map a differ
 Your config should look something like this:
 
 Add following to /etc/nginx/nginx.conf
+
 ```conf
 stream {
   map $ssl_preread_alpn_protocols $tls_port {
@@ -158,7 +166,6 @@ $ sudo nginx -s reload
 
 That way https requests are forwarded to port 443 on the backend server, and acme-tls/1 requests are forwarded to given port <PORT>.
 
-
 ## REFERENCE
 
 - https://samdecrock.medium.com/deploying-lets-encrypt-certificates-using-tls-alpn-01-https-18b9b1e05edf
@@ -166,4 +173,3 @@ That way https requests are forwarded to port 443 on the backend server, and acm
 - https://github.com/dehydrated-io/dehydrated/
 - https://letsencrypt.org/docs/challenge-types/
 - https://github.com/lukas2511/dehydrated/
-

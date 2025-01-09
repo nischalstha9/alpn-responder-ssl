@@ -1,6 +1,6 @@
 services:
   alpn:
-    image: nischalstha/alpn-responder:main
+    image: nischalstha/dehydrated-wrapped:main
     build:
       context: .
       dockerfile: Dockerfile
